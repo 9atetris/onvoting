@@ -13,4 +13,3 @@ sierra = true
 casm = true
 
 [tool.snforge]
-exit_first = true
