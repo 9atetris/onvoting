@@ -5,6 +5,8 @@ use starknet::ContractAddress;
 trait VoteTrait<T> {
     fn get_vote_status(self: @T) -> (u8, u8, u8, u8);
     fn voter_can_vote(self: @T, user_address: ContractAddress) -> bool;
+    //voterをのちに登録できるようにする
+    //voter登録->can_vote?
     fn is_voter_registered(self: @T, address: ContractAddress) -> bool;
     fn vote(ref self: T, vote: u8);
 }
@@ -90,6 +92,7 @@ mod Votingcode {
 
     #[generate_trait]
     impl InternalFunctions of InternalFunctionsTrait {
+        //これを外部から呼び出せるようにする
         fn _register_voters(
             ref self: ContractState,
             voter_1: ContractAddress,
