@@ -2,6 +2,7 @@ use array::ArrayTrait;
 use result::ResultTrait;
 use option::OptionTrait;
 use traits::TryInto;
+use snforge_std::PrintTrait;
 use starknet::ContractAddress;
 use starknet::Felt252TryIntoContractAddress;
 
@@ -27,5 +28,15 @@ fn prank_the_constructor() {
 
     start_prank(contract_address, 123.try_into().unwrap());
 
-    contract.deploy(snap_args).unwrap();
+    let contract_address = contract.deploy(snap_args).unwrap();
+
+    let dispatcher = VoteTraitDispatcher { contract_address };
+    dispatcher.voter_register();
+
+    dispatcher.vote(1);
+    let (a, b, c, d) = dispatcher.get_vote_status();
+    a.print();
+    b.print();
+    c.print();
+    d.print();
 }
