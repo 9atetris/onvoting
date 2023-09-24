@@ -5,8 +5,7 @@ use starknet::ContractAddress;
 trait VoteTrait<T> {
     fn get_vote_status(self: @T) -> (u8, u8, u8, u8);
     fn voter_can_vote(self: @T, user_address: ContractAddress) -> bool;
-    //voterをのちに登録できるようにする
-    //voter登録->can_vote?
+    fn voter_register(ref self: T);
     fn is_voter_registered(self: @T, address: ContractAddress) -> bool;
     fn vote(ref self: T, vote: u8);
 }
@@ -28,14 +27,9 @@ mod Votingcode {
     }
 
     #[constructor]
-    fn constructor(
-        ref self: ContractState,
-        voter_1: ContractAddress,
-        voter_2: ContractAddress,
-        voter_3: ContractAddress
-    ) {
+    fn constructor(ref self: ContractState, voter_1: ContractAddress) {
         //can pass to _refister_voters?
-        self._register_voters(voter_1, voter_2, voter_3);
+        self._register_voters(voter_1);
 
         self.yes_votes.write(0_u8);
         self.no_votes.write(0_u8);
@@ -73,6 +67,12 @@ mod Votingcode {
         fn is_voter_registered(self: @ContractState, address: ContractAddress) -> bool {
             self.registered_voter.read(address)
         }
+        fn voter_register(ref self: ContractState) {
+            let caller: ContractAddress = get_caller_address();
+
+            self._register_voters(caller);
+        }
+
         fn vote(ref self: ContractState, vote: u8) {
             assert(vote == NO || vote == YES, 'VOTE_0_OR_1');
             let caller: ContractAddress = get_caller_address();
@@ -93,20 +93,9 @@ mod Votingcode {
     #[generate_trait]
     impl InternalFunctions of InternalFunctionsTrait {
         //これを外部から呼び出せるようにする
-        fn _register_voters(
-            ref self: ContractState,
-            voter_1: ContractAddress,
-            voter_2: ContractAddress,
-            voter_3: ContractAddress
-        ) {
-            self.registered_voter.write(voter_1, true);
-            self.can_vote.write(voter_1, true);
-
-            self.registered_voter.write(voter_2, true);
-            self.can_vote.write(voter_2, true);
-
-            self.registered_voter.write(voter_3, true);
-            self.can_vote.write(voter_3, true);
+        fn _register_voters(ref self: ContractState, voter: ContractAddress,) {
+            self.registered_voter.write(voter, true);
+            self.can_vote.write(voter, true);
         }
     }
     #[generate_trait]
