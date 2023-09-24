@@ -7,8 +7,11 @@ use starknet::Felt252TryIntoContractAddress;
 
 use snforge_std::{declare, ContractClassTrait, start_prank};
 
-use contract1::Votingcode::VoteTraitDispatcher;
-use contract1::Votingcode::VoteTraitDispatcherTrait;
+use contract1::voting_contract1::Votingcode;
+//InterfaceのTraitDispatcherとDispatcherについて
+//storageではなく1つ上のmodファイル名直下
+use contract1::voting_contract1::VoteTraitDispatcher;
+use contract1::voting_contract1::VoteTraitDispatcherTrait;
 
 
 #[test]
